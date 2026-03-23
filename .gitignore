@@ -1,7 +1,8 @@
 .venv/
 __pycache__/
 *.pyc
-data/
+/data/
 artifacts/
 mlruns/
 .env
+modelling-steps.md
