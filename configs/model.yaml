@@ -1,4 +1,64 @@
-model_name: logistic_regression
-hyperparameters:
-  max_iter: 1000
-  random_state: 42
+model:
+  type: xgboost
+
+  params:
+    objective: binary:logistic
+    eval_metric: auc
+    random_state: 42
+    n_jobs: -1
+    tree_method: hist
+
+tuning:
+  enabled: true
+  n_trials: 30
+  optimization_metric: pr_auc #recall
+  direction: maximize
+
+  search_space:
+    n_estimators:
+      type: int
+      low: 100
+      high: 500
+
+    max_depth:
+      type: int
+      low: 3
+      high: 10
+
+    learning_rate:
+      type: float
+      low: 0.01
+      high: 0.3
+      log: true
+
+    subsample:
+      type: float
+      low: 0.6
+      high: 1.0
+
+    colsample_bytree:
+      type: float
+      low: 0.6
+      high: 1.0
+
+    min_child_weight:
+      type: int
+      low: 1
+      high: 10
+
+    gamma:
+      type: float
+      low: 0.0
+      high: 5.0
+
+    reg_alpha:
+      type: float
+      low: 1.0e-4
+      high: 10.0
+      log: true
+
+    reg_lambda:
+      type: float
+      low: 1.0e-4
+      high: 10.0
+      log: true
