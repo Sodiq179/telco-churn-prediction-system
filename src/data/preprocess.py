@@ -5,38 +5,15 @@ from sklearn.compose import ColumnTransformer
 from sklearn.impute import SimpleImputer
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder, OrdinalEncoder
+from src.utils.config import load_yaml_config
 
+DATA_CONFIG = load_yaml_config("configs/data.yaml")
 
-BINARY_CATEGORICAL_COLUMNS = [
-    "gender",
-    "Partner",
-    "Dependents",
-    "PhoneService",
-    "PaperlessBilling",
-]
-
-ONEHOT_CATEGORICAL_COLUMNS = [
-    "MultipleLines",
-    "InternetService",
-    "OnlineSecurity",
-    "OnlineBackup",
-    "DeviceProtection",
-    "TechSupport",
-    "StreamingTV",
-    "StreamingMovies",
-    "Contract",
-    "PaymentMethod",
-]
-
-NUMERICAL_COLUMNS = [
-    "SeniorCitizen",
-    "tenure",
-    "MonthlyCharges",
-    "TotalCharges",
-]
-
-TARGET_COLUMN = "Churn"
-ID_COLUMN = "customerID"
+BINARY_CATEGORICAL_COLUMNS = DATA_CONFIG["binary_categorical_columns"]
+ONEHOT_CATEGORICAL_COLUMNS = DATA_CONFIG["onehot_categorical_columns"]
+NUMERICAL_COLUMNS = DATA_CONFIG["numerical_columns"]
+TARGET_COLUMN = DATA_CONFIG["Churn"]
+ID_COLUMN = DATA_CONFIG["id_column"]
 
 
 def clean_raw_dataframe(df: pd.DataFrame) -> pd.DataFrame:
