@@ -11,7 +11,7 @@ model:
 tuning:
   enabled: true
   n_trials: 30
-  optimization_metric: pr_auc #recall
+  optimization_metric: recall
   direction: maximize
 
   search_space:
