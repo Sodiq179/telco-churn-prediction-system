@@ -2,4 +2,5 @@ project_name: telco-churn-prediction-system
 artifacts_dir: artifacts
 model_dir: artifacts/model
 metrics_dir: artifacts/metrics
+mlruns_dir: mlruns
 log_dir: logs
