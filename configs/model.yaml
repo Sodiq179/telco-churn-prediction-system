@@ -10,7 +10,7 @@ model:
 
 tuning:
   enabled: true
-  n_trials: 30
+  n_trials: 50
   optimization_metric: recall
   direction: maximize
 
@@ -24,6 +24,11 @@ tuning:
       type: int
       low: 3
       high: 10
+
+    scale_pos_weight:
+      type: float
+      low: 2.0
+      high: 3.5
 
     learning_rate:
       type: float
