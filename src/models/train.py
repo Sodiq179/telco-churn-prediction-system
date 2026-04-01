@@ -3,32 +3,50 @@ from __future__ import annotations
 from pathlib import Path
 import joblib
 
-from xgboost import XGBClassifier
 from sklearn.pipeline import Pipeline
 
+from src.models.model_factory import build_estimator
+from src.utils.config import load_yaml_config
 
-def train_model(preprocessor, X_train, y_train, model_params: dict) -> Pipeline:
+
+MODEL_CONFIG = load_yaml_config("configs/model.yaml")
+
+
+def get_active_model_config() -> tuple[str, dict]:
     """
-    Train XGBoost model with given preprocessing and hyperparameters.
+    Get active model and its parameter from model.yaml.
+    """
+    active_model = MODEL_CONFIG["active_model"]
+
+    model_cfg = MODEL_CONFIG["models"][active_model]
+
+    return active_model, model_cfg
+
+
+def train_model(preprocessor, X_train, y_train, model_params: dict | None = None) -> Pipeline:
+    """
+    Train models.
     """
 
-    model = XGBClassifier(
-        objective="binary:logistic",
-        eval_metric="logloss",
-        random_state=42,
-        n_jobs=-1,
-        **model_params
+    active_model, model_cfg = get_active_model_config()
+
+    base_params = model_cfg["params"].copy()
+    if model_params:
+        base_params.update(model_params)
+
+    estimator = build_estimator(
+        estimator_class_name=model_cfg["estimator_class"],
+        params=base_params,
     )
 
     model_pipeline = Pipeline(
         steps=[
             ("preprocessor", preprocessor),
-            ("model", model),
+            ("model", estimator),
         ]
     )
 
     model_pipeline.fit(X_train, y_train)
-
     return model_pipeline
 
 
