@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import optuna
 import mlflow
-import mlflow.sklearn
 
 from sklearn.metrics import recall_score
 from sklearn.pipeline import Pipeline
@@ -12,7 +11,10 @@ from src.utils.config import load_yaml_config
 
 
 MODEL_CONFIG = load_yaml_config("configs/model.yaml")
+APP_CONFIG = load_yaml_config("configs/config.yaml")
 
+mlflow.set_tracking_uri(APP_CONFIG["mlruns_dir"])
+mlflow.set_experiment("telco_churn_xgboost_tuning")
 
 def suggest_params(trial: optuna.Trial) -> dict:
     space = MODEL_CONFIG["tuning"]["search_space"]
@@ -45,8 +47,9 @@ def objective(trial, X_train, y_train, X_val, y_val, preprocessor):
         ("model", model),
     ])
 
-    with mlflow.start_run(nested=True):
+    with mlflow.start_run(nested=True, run_name=f"trial_{trial.number}"):
         mlflow.log_params(params)
+        mlflow.log_param("trial_number", trial.number)
 
         pipeline.fit(X_train, y_train)
 
@@ -55,7 +58,7 @@ def objective(trial, X_train, y_train, X_val, y_val, preprocessor):
 
         recall = recall_score(y_val, y_pred)
 
-        mlflow.log_metric("recall", recall)
+        mlflow.log_metric("val_recall", recall)
 
     return recall
 
@@ -66,12 +69,15 @@ def run_tuning(X_train, y_train, X_val, y_val, preprocessor):
     )
 
     with mlflow.start_run(run_name="optuna_tuning"):
+        mlflow.log_param("n_trials", MODEL_CONFIG["tuning"]["n_trials"])
+        mlflow.log_param("optimization_metric", MODEL_CONFIG["tuning"]["optimization_metric"])
+
         study.optimize(
             lambda trial: objective(trial, X_train, y_train, X_val, y_val, preprocessor),
             n_trials=MODEL_CONFIG["tuning"]["n_trials"],
         )
 
         mlflow.log_params(study.best_params)
-        mlflow.log_metric("best_recall", study.best_value)
+        mlflow.log_metric("best_val_recall", study.best_value)
 
     return study.best_params
