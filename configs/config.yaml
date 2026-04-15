@@ -4,3 +4,4 @@ model_dir: artifacts/model
 metrics_dir: artifacts/metrics
 mlruns_dir: file:./mlruns
 log_dir: logs
+final_model: artifacts/model/model_pipeline_20260415174556.joblib

@@ -4,9 +4,11 @@ from pathlib import Path
 
 import joblib
 import pandas as pd
+from src.utils.config import load_yaml_config
 
 
-MODEL_PATH = "artifacts/model/model_pipeline.joblib"
+CONFIG = load_yaml_config("configs/config.yaml")
+MODEL_PATH = CONFIG["final_model"]
 
 
 def load_model(model_path: str | Path = MODEL_PATH):
